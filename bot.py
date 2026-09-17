@@ -240,8 +240,8 @@ async def on_member_join(member: discord.Member):
             ),
             color=0x00D2D3
         )
-        if member.avatar:
-            embed.set_thumbnail(url=member.avatar.url)
+        if member.display_avatar:
+            embed.set_thumbnail(url=member.display_avatar.url)
         embed.set_footer(text="HubTech • Conectando tecnologia, projetos e pessoas")
         await welcome_ch.send(content=f"👋 Olá {member.mention}!", embed=embed)
 
@@ -295,6 +295,17 @@ async def setup_interactive_panels(guild):
             embed.set_footer(text="HubTech • Comunidade Colaborativa")
             await sugestoes_ch.send(embed=embed, view=SuggestionView())
             print("  -> Painel de sugestões publicado em #sugestoes-e-ideias")
+
+    # 3. Catch-up retroativo: garantir que qualquer membro sem cargo receba o cargo base
+    role = discord.utils.get(guild.roles, name="🚀 Membro HubTech")
+    if role:
+        for m in guild.members:
+            if not m.bot and role not in m.roles:
+                try:
+                    await m.add_roles(role, reason="Auto-role catch-up retroativo")
+                    print(f"  -> Cargo atribuído retroativamente para {m.name}")
+                except Exception as e:
+                    print(f"  -> Erro ao atribuir cargo retroativo: {e}")
 
 
 @bot.event
