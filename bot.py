@@ -5,9 +5,8 @@ import discord
 from discord.ext import commands
 from discord import ui
 from dotenv import load_dotenv
-from aiohttp import web
 
-# Configuração de UTF-8 no Windows Console para suportar emojis sem travar
+# Configuração de UTF-8 no console para suportar emojis sem travar
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
 if hasattr(sys.stderr, "reconfigure"):
@@ -21,28 +20,12 @@ intents.guilds = True
 intents.members = True
 intents.message_content = True
 
-# --- SERVIDOR WEB LEVE PARA MONITORAMENTO / CLOUD (RENDER HEALTH CHECK) ---
-async def start_health_server():
-    app = web.Application()
-    async def ping(request):
-        return web.Response(text="HubTech Bot 24/7 is Online and Healthy! 🚀")
-    app.router.add_get("/", ping)
-    app.router.add_get("/health", ping)
-    runner = web.AppRunner(app)
-    await runner.setup()
-    port = int(os.getenv("PORT", 8080))
-    site = web.TCPSite(runner, "0.0.0.0", port)
-    await site.start()
-    print(f"Servidor Web de Health Check ativo na porta {port}")
-
 class HubTechBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=intents)
 
     async def setup_hook(self):
-        # Iniciar health check na nuvem
-        asyncio.create_task(start_health_server())
-        # Registrar views persistentes para funcionarem mesmo após reinicialização
+        # Registrar views persistentes para funcionarem 24/7 mesmo após reinicialização
         self.add_view(RoleSelectView())
         self.add_view(SuggestionView())
         self.add_view(ModerationView())
@@ -229,7 +212,7 @@ async def on_member_join(member: discord.Member):
     
     if welcome_ch:
         embed = discord.Embed(
-            title=f"🎉 Bem-vindo(a) ao HubTech!",
+            title="🎉 Bem-vindo(a) ao HubTech!",
             description=(
                 f"Olá {member.mention}, que honra ter você na nossa comunidade de tecnologia! 🚀\n\n"
                 f"**Primeiros passos recomendados:**\n"
@@ -310,7 +293,7 @@ async def setup_interactive_panels(guild):
 
 @bot.event
 async def on_ready():
-    print(f"🤖 HubTech Bot online como {bot.user} (ID: {bot.user.id})")
+    print(f"🤖 HubTech Bot online 24/7 na Discloud como {bot.user} (ID: {bot.user.id})")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="a comunidade HubTech 🚀"))
     for guild in bot.guilds:
         await setup_interactive_panels(guild)
