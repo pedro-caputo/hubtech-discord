@@ -221,7 +221,7 @@ async def setup_guild(guild):
             )
             embed.add_field(name="🎯 O que é o Vektor?", value="O **Vektor** é uma plataforma inovadora focada em **construção inteligente de currículos** e **match de vagas** sob medida para o perfil de cada profissional de tecnologia.", inline=False)
             embed.add_field(name="💡 Como ele te ajuda?", value="• Criação de currículos otimizados para ATS e recrutadores tech\n• Análise de compatibilidade do seu perfil com vagas do mercado\n• Recomendações de aprimoramento profissional", inline=False)
-            embed.add_field(name="🔗 Acompanhe e Apoie", value="Fique ligado neste canal para novidades, lançamentos de testes e acesso antecipado ao Vektor!", inline=False)
+            embed.add_field(name="🔗 Acompanhe e Apoie", value="Acesse gratuitamente agora mesmo: https://vektor-career.vercel.app
             embed.set_footer(text="Parceria HubTech x Vektor")
             await vektor_ch.send(embed=embed)
             print("[Embed Enviado] #parceiros-vektor")
