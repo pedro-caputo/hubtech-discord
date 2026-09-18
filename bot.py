@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 from discord import ui
 from dotenv import load_dotenv
+from aiohttp import web
 
 # Configuração de UTF-8 no console para suportar emojis sem travar
 if hasattr(sys.stdout, "reconfigure"):
@@ -20,11 +21,27 @@ intents.guilds = True
 intents.members = True
 intents.message_content = True
 
+# --- SERVIDOR WEB LEVE PARA MONITORAMENTO 24/7 (RENDER + UPTIMEROBOT) ---
+async def start_health_server():
+    app = web.Application()
+    async def ping(request):
+        return web.Response(text="HubTech Bot 24/7 is Online and Healthy! 🚀")
+    app.router.add_get("/", ping)
+    app.router.add_get("/health", ping)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.getenv("PORT", 8080))
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
+    print(f"Servidor Web de Health Check ativo na porta {port}")
+
 class HubTechBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=intents)
 
     async def setup_hook(self):
+        # Iniciar servidor web de monitoramento para a nuvem
+        asyncio.create_task(start_health_server())
         # Registrar views persistentes para funcionarem 24/7 mesmo após reinicialização
         self.add_view(RoleSelectView())
         self.add_view(SuggestionView())
@@ -293,7 +310,7 @@ async def setup_interactive_panels(guild):
 
 @bot.event
 async def on_ready():
-    print(f"🤖 HubTech Bot online 24/7 na Discloud como {bot.user} (ID: {bot.user.id})")
+    print(f"🤖 HubTech Bot online 24/7 como {bot.user} (ID: {bot.user.id})")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="a comunidade HubTech 🚀"))
     for guild in bot.guilds:
         await setup_interactive_panels(guild)
