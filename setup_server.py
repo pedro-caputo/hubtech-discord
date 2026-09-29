@@ -1,4 +1,4 @@
-﻿import os
+import os
 import sys
 import asyncio
 import discord
@@ -37,6 +37,7 @@ STRUCTURE = [
         "category": "🌐 HUBTECH OFICIAL",
         "read_only": True,
         "channels": [
+            {"name": "👋・boas-vindas", "type": "text", "topic": "Recepção e boas-vindas aos novos membros do HubTech | UNICSUL"},
             {"name": "📌・regras-e-diretrizes", "type": "text", "topic": "Diretrizes e conduta da comunidade HubTech"},
             {"name": "📢・avisos-e-novidades", "type": "text", "topic": "Anúncios e novidades oficiais"},
             {"name": "🚀・plataforma-hubtech", "type": "text", "topic": "Link direto para o portal HubTech e atualizações do site"},

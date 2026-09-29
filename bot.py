@@ -1,4 +1,4 @@
-﻿import os
+import os
 import sys
 import asyncio
 import discord
@@ -221,22 +221,24 @@ async def on_member_join(member: discord.Member):
         except Exception as e:
             print(f"  -> Erro ao atribuir cargo: {e}")
 
-    # 2. Publicar mensagem estilizada de boas-vindas no #chat-geral
-    welcome_ch = discord.utils.get(member.guild.channels, name="💬・chat-geral")
+    # 2. Publicar mensagem estilizada de boas-vindas no canal exclusivo #boas-vindas
+    welcome_ch = discord.utils.get(member.guild.channels, name="👋・boas-vindas") or discord.utils.get(member.guild.channels, name="💬・chat-geral")
     regras_ch = discord.utils.get(member.guild.channels, name="📌・regras-e-diretrizes")
     apresente_ch = discord.utils.get(member.guild.channels, name="👋・apresente-se")
     showcase_ch = discord.utils.get(member.guild.channels, name="🛠️・showcase-projetos")
+    chat_geral_ch = discord.utils.get(member.guild.channels, name="💬・chat-geral")
     
     if welcome_ch:
         embed = discord.Embed(
-            title="🎉 Bem-vindo(a) ao HubTech!",
+            title="🎉 Bem-vindo(a) ao HubTech | UNICSUL!",
             description=(
-                f"Olá {member.mention}, que honra ter você na nossa comunidade de tecnologia! 🚀\n\n"
+                f"Olá {member.mention}, seja muito bem-vindo(a) à nossa comunidade de tecnologia! 🚀\n\n"
                 f"**Primeiros passos recomendados:**\n"
                 f"• 📜 Dê uma olhada em {regras_ch.mention if regras_ch else '#regras'}\n"
-                f"• 🎯 Escolha suas tecnologias e apresente-se em {apresente_ch.mention if apresente_ch else '#apresente-se'}\n"
+                f"• 🎯 Escolha suas tecnologias em {apresente_ch.mention if apresente_ch else '#apresente-se'}\n"
+                f"• 💬 Troque uma ideia com a galera no {chat_geral_ch.mention if chat_geral_ch else '#chat-geral'}\n"
                 f"• 🛠️ Compartilhe o que está construindo em {showcase_ch.mention if showcase_ch else '#showcase-projetos'}\n\n"
-                f"Sinta-se em casa para trocar ideias, tirar dúvidas e programar junto!"
+                f"Sinta-se em casa para aprender, tirar dúvidas e programar junto!"
             ),
             color=0x00D2D3
         )
