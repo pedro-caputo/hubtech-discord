@@ -87,6 +87,16 @@ STRUCTURE = [
         ]
     },
     {
+        "category": "🎮 ESPAÇO GAMER",
+        "read_only": False,
+        "channels": [
+            {"name": "💬・chat-games", "type": "text", "topic": "Canal para combinar partidas, trocar nicks/tags e conversar sobre games!"},
+            {"name": "🎮・Squad 01", "type": "voice", "topic": "Call principal para jogos em grupo"},
+            {"name": "🎮・Squad 02", "type": "voice", "topic": "Call secundária para jogos em grupo"},
+            {"name": "🎲・Jogos Casuais", "type": "voice", "topic": "Call para jogos leves, xadrez e resenha"},
+        ]
+    },
+    {
         "category": "🛡️ STAFF & MODERAÇÃO",
         "private": True,
         "channels": [
