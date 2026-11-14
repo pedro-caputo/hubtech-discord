@@ -46,8 +46,8 @@ class HubTechBot(commands.Bot):
         self.add_view(RoleSelectView())
         self.add_view(SuggestionView())
         self.add_view(ModerationView())
-        # Iniciar rotina agendada para o comunicado oficial de sábado de manhã
-        asyncio.create_task(scheduled_announcement_task())
+        # Rotina agendada cancelada conforme solicitação do Pedro
+        # asyncio.create_task(scheduled_announcement_task())
 
 bot = HubTechBot()
 
