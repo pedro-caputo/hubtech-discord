@@ -46,6 +46,8 @@ class HubTechBot(commands.Bot):
         self.add_view(RoleSelectView())
         self.add_view(SuggestionView())
         self.add_view(ModerationView())
+        # Iniciar rotina agendada para o comunicado oficial de sábado de manhã
+        asyncio.create_task(scheduled_announcement_task())
 
 bot = HubTechBot()
 
@@ -308,6 +310,82 @@ async def setup_interactive_panels(guild):
                     print(f"  -> Cargo atribuído retroativamente para {m.name}")
                 except Exception as e:
                     print(f"  -> Erro ao atribuir cargo retroativo: {e}")
+
+
+# --- 4. TAREFA AGENDADA & COMANDO: COMUNICADO OFICIAL ---
+ANUNCIO_OFICIAL_TEXT = """@everyone
+
+# 📢 O servidor voltou: nova fase e organização do Discord de TI
+
+Fala pessoal, beleza?
+
+Sei que o servidor estava abandonado e ninguém aguentava mais os spams marcando todo mundo. Já travamos as menções de `@everyone` para cortar esses golpes de vez.
+
+Pra quem não me conhece, sou o Pedro, aluno de Ciência da Computação aqui da Cruzeiro. Conversei diretamente com a coordenação (professores Giulio, Marco e Claudio) pra gente assumir a administração e reativar essa comunidade de verdade.
+
+A ideia é transformar este Discord em um lugar que realmente ajude no nosso dia a dia: canais organizados por áreas pra tirar dúvidas de matérias, provas e projetos, além de aproximar o contato entre calouros, veteranos e professores para fortalecer o networking de todo mundo.
+
+Junto com isso, estamos trazendo o **HubTech** — uma iniciativa com apoio da coordenação focada em benefícios estudantis, certificações e curadoria de cursos gratuitos para a nossa área.
+
+**Aviso importante sobre os canais:**  
+Como os chats atuais estão cheios de spam antigo, na **terça-feira (18/11)** nós vamos resetar e subir uma estrutura nova e limpa do zero. 
+
+Se você tiver alguma mensagem, contato ou arquivo importante salvo por aqui, aproveite para guardar até terça.
+
+Qualquer dúvida ou sugestão do que vocês gostariam de ver por aqui, só mandar abaixo. Tamo junto!"""
+
+async def send_official_announcement(target_guild_id: int = 1145793640577388574):
+    guild = bot.get_guild(target_guild_id)
+    if not guild:
+        for g in bot.guilds:
+            if "Cruzeiro" in g.name or "TI" in g.name:
+                guild = g
+                break
+    if not guild:
+        print("[Anúncio] Servidor alvo não encontrado.")
+        return False
+        
+    geral_ch = discord.utils.get(guild.text_channels, name="geral")
+    if not geral_ch:
+        print(f"[Anúncio] Canal #geral não encontrado em {guild.name}.")
+        return False
+
+    # Evitar disparo duplicado
+    async for m in geral_ch.history(limit=25):
+        if m.author == bot.user and "O servidor voltou: nova fase" in m.content:
+            print("[Anúncio] Mensagem já foi enviada anteriormente no #geral.")
+            return True
+
+    await geral_ch.send(ANUNCIO_OFICIAL_TEXT)
+    print(f"✅ [Anúncio Oficial Enviado] Postado com sucesso em {guild.name} -> #{geral_ch.name}")
+    return True
+
+async def scheduled_announcement_task():
+    await bot.wait_until_ready()
+    from datetime import datetime, timezone, timedelta
+    brt = timezone(timedelta(hours=-3))
+    # Alvo: Sábado, 14/11/2026 às 10:30 BRT
+    target_time = datetime(2026, 11, 14, 10, 30, 0, tzinfo=brt)
+    print(f"[Schedule] Comunicado Oficial programado para: {target_time.strftime('%d/%m/%Y %H:%M:%S')} (Horário de Brasília)")
+    
+    while not bot.is_closed():
+        now = datetime.now(brt)
+        if now >= target_time:
+            sent = await send_official_announcement()
+            if sent:
+                print("[Schedule] Tarefa concluída: anúncio oficial publicado automaticamente!")
+                break
+        await asyncio.sleep(30)
+
+@bot.command(name="anuncio_oficial")
+@commands.has_permissions(administrator=True)
+async def cmd_anuncio_oficial(ctx):
+    """Comando manual de backup: !anuncio_oficial"""
+    sent = await send_official_announcement()
+    if sent:
+        await ctx.send("✅ Comunicado oficial publicado no canal `#geral`!", delete_after=10)
+    else:
+        await ctx.send("⚠️ Não foi possível enviar. Verifique os logs do bot.", delete_after=10)
 
 
 @bot.event
